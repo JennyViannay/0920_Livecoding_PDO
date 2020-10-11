@@ -6,8 +6,10 @@ session_start();
 // A chaque tour de boucle j'ajoute la valeur des quantités d'articles à $numberArticles
 // $numberArticle est à jour en fonction des qty d'articles que j'ai dans mon panier 
 $numberArticles = 0;
-foreach ($_SESSION['cart'] as $article => $qty) {
-    $numberArticles += $qty;
+if(!empty($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $article => $qty) {
+        $numberArticles += $qty;
+    }
 }
 ?>
 <!doctype html>
@@ -27,12 +29,22 @@ foreach ($_SESSION['cart'] as $article => $qty) {
 <body>
     <nav class="navbar navbar-light bg-light">
         <a class="navbar-brand" href="../index.php">Livecoding PDO </a>
-        <!-- CONDITIONS D'AFFICHAGE : 
-        Si ma session cat n'est pas vide j'affiche panier + count du panier -->
-        <?php if(!empty($_SESSION['cart'])){ ?>
-            <a href="../views/cart.php" class="btn"><i class="fas fa-shopping-cart"></i> <span class="badge badge-danger"><?php echo $numberArticles; ?></span></a>
-        <!-- Sinon juste panier -->
-        <?php } else { ?>
-            <a href="../views/cart.php" class="btn"><i class="fas fa-shopping-cart"></i></a>
-        <?php } ?>
+        <ul class="nav">
+            <li class="nav-item">
+                <!-- CONDITIONS D'AFFICHAGE : 
+                Si ma session cat n'est pas vide j'affiche panier + count du panier -->
+                <?php if(!empty($_SESSION['cart'])){ ?>
+                    <a href="../views/cart.php" class="nav-link btn">
+                        <i class="fas fa-shopping-cart"></i> 
+                        <span class="badge badge-danger"><?php echo $numberArticles; ?></span>
+                    </a>
+                <!-- Sinon juste panier -->
+                <?php } else { ?>
+                    <a href="../views/cart.php" class="nav-link btn"><i class="fas fa-shopping-cart"></i></a>
+                <?php } ?>
+            </li>
+            <li class="nav-item">
+                <a href="../views/admin.php" class="nav-link btn"><i class="fas fa-user-ninja"></i></a>
+            </li>
+        </ul>
     </nav>
