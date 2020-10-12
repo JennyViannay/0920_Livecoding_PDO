@@ -6,8 +6,10 @@ session_start();
 // A chaque tour de boucle j'ajoute la valeur des quantités d'articles à $numberArticles
 // $numberArticle est à jour en fonction des qty d'articles que j'ai dans mon panier 
 $numberArticles = 0;
-foreach ($_SESSION['cart'] as $article => $qty) {
-    $numberArticles += $qty;
+if(isset($_SESSION['cart'])){
+    foreach ($_SESSION['cart'] as $article => $qty) {
+        $numberArticles += $qty;
+    }
 }
 ?>
 <!doctype html>
