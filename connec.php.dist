@@ -1,4 +1,4 @@
 <?php
-define("DSN", "mysql:host=localhost;dbname=checkpoint1");
+define("DSN", "mysql:host=localhost;dbname=checkpoint1"); // Si vous utilisez MAMP : "mysql:host=localhost:8889;dbname=checkpoint1"
 define("USER", "your_username");
 define("PASS", "your_password");
