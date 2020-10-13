@@ -4,7 +4,10 @@ require '../../function.php';
 // Je récupère les infos panier depuis la methode getCartInfos du fichier function.php
 // Qui permet d'avoir un array de type clé => valeur
 // Dans mon cas 'nom_de_l'article' => 'qty'
-$cartInfos = getCartInfos();
+if(!empty($_SESSION['cart'])){
+    $cartInfos = getCartInfos();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (!empty($_GET['article'])) {
         deleteArticle($_GET['article']);
@@ -33,20 +36,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             // Initialise une var $total à 0
             // Puis boucle sur les éléments du panier ($cartInfos) et pour chaque tour de boucle 
             // J'incrémente $total du montant du prix multiplié par la qty de l'article 
-            $total = 0;
             for ($i = 0; $i < count($cartInfos); $i++) {
-                $total += $cartInfos[$i]['qty'] * 270;
             ?>
             <!-- A l'interieur de la boucle j'en profite pour afficher chaque ligne de mon panier toujours depuis cartInfos -->
                 <tr>
                     <th scope="row">#</th>
                     <td><?php echo $cartInfos[$i]['product'] ?></td>
                     <td><?php echo $cartInfos[$i]['qty'] ?></td>
-                    <td>270 $</td>
-                    <td><?php echo $cartInfos[$i]['qty'] * 270 ?> $</td>
+                    <td><?php echo $cartInfos[$i]['price'] ?> $</td>
+                    <td><?php echo $cartInfos[$i]['qty'] * $cartInfos[$i]['price'] ?> $</td>
                     <td>
                         <form method="GET">
-                            <input type="text" class="d-none" name="article" value="<?php echo $cartInfos[$i]['product'] ?>">
+                            <input type="text" class="d-none" name="article" value="<?php echo $cartInfos[$i]['id'] ?>">
                             <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></a>
                         </form>
                     </td>
@@ -56,16 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     </table>
     <div class="jumbotron">
         <!-- J'affiche le résultat du total ici -->
-        <h1 class="display-4">Total panier : <?php echo $total; // ou echo getCartTotal() depuis le fichier function.php ?> $ </h1>
+        <h1 class="display-4">Total panier : <?= getTotalCart() ?> $ </h1>
         <hr class="my-4">
         <form method="POST" action="success.php">
             <div class="form-group">
-                <label for="firstname">Nom</label>
-                <input type="text" class="form-control" name="firstname" id="firstname">
-            </div>
-            <div class="form-group">
-                <label for="lastname">Prénom</label>
-                <input type="text" class="form-control" name="lastname" id="lastname">
+                <label for="name">Nom</label>
+                <input type="text" class="form-control" name="name" id="name">
             </div>
             <div class="form-group">
                 <label for="address">Adresse</label>

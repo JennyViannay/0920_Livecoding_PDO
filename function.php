@@ -30,9 +30,12 @@ function getCartInfos()
     $cart = $_SESSION['cart'];
     $cartInfos = [];
     foreach ($cart as $article => $qty) {
+        $articleInfos = getOneArticle($article);
         $cartInfos[] = [
-            'product' => $article,
-            'qty' => $qty
+            'id' => $articleInfos->id,
+            'product' => $articleInfos->name,
+            'qty' => $qty,
+            'price' => $articleInfos->price
         ];
     }
     return $cartInfos;
@@ -42,7 +45,7 @@ function getTotalCart()
 {
     $total = 0;
     foreach(getCartInfos() as $item){
-        $total += $item['qty'] * 270;
+        $total += $item['qty'] * $item['price'];
     }
     return $total;
 }
@@ -85,4 +88,92 @@ function search($term)
         'search' => $searchTerm
     ]);
     return $articles = $statement->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// DELETE ARTICLE FROM BDD
+function deleteArticleFromBdd(int $id)
+{
+    $pdo = new PDO(DSN, USER, PASS, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $query = "DELETE FROM article WHERE id=:id;";
+    try {
+        $sendRequest = $pdo->prepare($query);
+        $sendRequest->bindValue(':id', $id, PDO::PARAM_INT);
+        $sendRequest->execute();
+        header('Location: http://localhost:8005/views/admin.php');
+    } catch (PDOException $e) {
+        return $error = $e->getMessage();
+    }
+}
+
+// CREATE ARTICLE
+function createArticle(array $data)
+{
+    $pdo = new PDO(DSN, USER, PASS, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $query = "INSERT INTO article (name, img, price) VALUES (:name, :img, :price)";
+    try {
+        $sendRequest = $pdo->prepare($query);
+        $sendRequest->bindValue(':name', $data['name'], PDO::PARAM_STR);
+        $sendRequest->bindValue(':img', $data['img'], PDO::PARAM_STR);
+        $sendRequest->bindValue(':price', $data['price'], PDO::PARAM_INT);
+        $sendRequest->execute();
+        header('Location: http://localhost:8005/views/admin.php');
+    } catch (PDOException $e) {
+        return $error = $e->getMessage();
+    }
+}
+
+// UPDATE ARTICLE
+function updateArticle(array $data)
+{
+    $pdo = new PDO(DSN, USER, PASS, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $query = "UPDATE article SET name=:name, img=:img, price=:price WHERE id=:id";
+    try {
+        $sendRequest = $pdo->prepare($query);
+        $sendRequest->bindValue(':name', $data['name'], PDO::PARAM_STR);
+        $sendRequest->bindValue(':img', $data['img'], PDO::PARAM_STR);
+        $sendRequest->bindValue(':price', $data['price'], PDO::PARAM_INT);
+        $sendRequest->bindValue(':id', $data['id'], PDO::PARAM_INT);
+        $sendRequest->execute();
+        header('Location: http://localhost:8005/views/admin.php');
+    } catch (PDOException $e) {
+        return $error = $e->getMessage();
+    }
+}
+
+function payment(array $data)
+{
+    session_destroy();
+    createCommand($data);
+}
+
+// CREATE COMMAND
+function createCommand(array $data)
+{
+    $pdo = new PDO(DSN, USER, PASS, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $query = "INSERT INTO command (name, address, total, created_at) VALUES (:name, :address, :total, :created_at)";
+    try {
+        $sendRequest = $pdo->prepare($query);
+        $sendRequest->bindValue(':name', $data['name'], PDO::PARAM_STR);
+        $sendRequest->bindValue(':address', $data['address'], PDO::PARAM_STR);
+        $sendRequest->bindValue(':total', $data['total'], PDO::PARAM_INT);
+        $sendRequest->bindValue(':created_at', $data['created_at']);
+        $sendRequest->execute();
+        header('Location: http://localhost:8005/views/admin.php');
+    } catch (PDOException $e) {
+        return $error = $e->getMessage();
+    }
+}
+
+// GET ALL COMMAND
+function getAllCommands()
+{
+    $pdo = new PDO(DSN, USER, PASS, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $query = "SELECT * FROM command;";
+    try {
+        $sendRequest = $pdo->query($query);
+        $commands = $sendRequest->fetchAll(PDO::FETCH_ASSOC);
+        return $commands;
+    } catch (PDOException $e) {
+        return $error = $e->getMessage();
+    }
 }
